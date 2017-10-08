@@ -32,13 +32,7 @@ class user {
         $this->active = ($user->active == 1 ? true : false);
     }
 
-    public function __set($name, $value) {
-        if ($name == 'password') {
-            $this->password = hash('sha256', $value);
-        }
-    }
-
-    public function __destruct() {
+    public function save() {
         global $db;
         $db->update(
             self::$TABLE,
