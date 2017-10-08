@@ -27,6 +27,16 @@
             width: calc(100% - 40px);
         }
 
+        #footer {
+            width: 100%;
+            background-color: #242424;
+            color: #ffffff;
+            position: absolute;
+            bottom: 0;
+            text-align: center;
+            padding: 15px;
+        }
+
         .alert {
             width: calc(100% - 40px);
             margin: 20px;
