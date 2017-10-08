@@ -2,8 +2,8 @@
 require_once('includes/start.inc.php');
 include_once('includes/header.inc.php');
 
-if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-    header('Location: index.php');
+if (is_logged_in()) {
+    redirect('index.php');
 }
 
 if (!isset($_SESSION['creating']) || $_SESSION['creating'] == false) {
@@ -15,14 +15,14 @@ if (!isset($_SESSION['creating']) || $_SESSION['creating'] == false) {
             $user = new user($userdb);
             if ($user->active) {
                 if (hash('sha256', $_POST['password']) == $user->password) {
-                    $_SESSION['loggedin'] = true;
+                    $_SESSION['isloggedin'] = true;
                     $_SESSION['user'] = $user;
                     if (isset($_SESSION['attempts'])) {
                         unset($_SESSION['attempts']);
                     }
-                    header('Location: index.php');
+                    redirect('index.php');
                 } else {
-                    $message = urlencode('Le mot de passe est erroné.');
+                    $message = 'Le mot de passe est erroné.';
                     if ($_SESSION['attempts']) {
                         if ($_SESSION['attempts'] < 3) {
                             $_SESSION['attempts']++;
@@ -32,11 +32,11 @@ if (!isset($_SESSION['creating']) || $_SESSION['creating'] == false) {
                     } else {
                         $_SESSION['attempts'] = 1;
                     }
-                    header('Location: login.php?notif=' . $message);
+                    redirect('login.php', $message);
                 }
             } else {
-                $message = urlencode('Votre compte n\'a pas encore été validé !');
-                header('Location: login.php?notif=' . $message);
+                $message = 'Votre compte n\'a pas encore été validé !';
+                redirect('login.php', $message);
             }
         }
     }
@@ -44,8 +44,8 @@ if (!isset($_SESSION['creating']) || $_SESSION['creating'] == false) {
     if (hash('sha256', $_POST['confirm-pw']) == $_SESSION['data']['password']) {
         user::create($_SESSION['data']['email'], $_SESSION['data']['password'], $_POST['lastname'], $_POST['firstname']);
         $_SESSION['creating'] = false;
-        $message = urlencode('Vous avez bien créé votre compte, il doit maintenant être validé par un administrateur !');
-        header('Location: login.php?notif=' . $message);
+        $message = 'Vous avez bien créé votre compte, il doit maintenant être validé par un administrateur !';
+        redirect('login.php', $message);
     }
 }
 ?>
@@ -54,7 +54,7 @@ if (!isset($_SESSION['creating']) || $_SESSION['creating'] == false) {
         <div class="col-6">
             <form method="post" id="content">
                 <?php
-                if (!isset($_SESSION['creating']) || $_SESSION['creati:ng'] == false) {
+                if (!isset($_SESSION['creating']) || $_SESSION['creating'] == false) {
                     ?>
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -89,3 +89,5 @@ if (!isset($_SESSION['creating']) || $_SESSION['creating'] == false) {
         </div>
     </div>
 </div>
+<?php
+include_once('includes/footer.inc.php');
